@@ -1,12 +1,21 @@
-﻿ using Microsoft.AspNetCore.Mvc;
+﻿using eTickets.Data.Enums;
+using Microsoft.AspNetCore.Mvc;
 
 namespace eTickets.Controllers
 {
     public class ActorsController : Controller
     {
+        //inject the data
+        private readonly AppDbContext _context;
+
+        public ActorsController(AppDbContext context)
+        {
+            _context = context;
+        }
         public IActionResult Index()
         {
-            return View();
+            var data = _context.Actors.ToList();
+            return View(data);
         }
     }
 }
