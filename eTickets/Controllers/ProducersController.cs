@@ -1,24 +1,83 @@
-﻿using eTickets.Data.Enums;
+﻿using eTickets.Data.Services;
+using eTickets.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace eTickets.Controllers
 {
     public class ProducersController : Controller
     {
+        private readonly IProducersService _service;
 
-        //inject the appdbcontext
-        private readonly AppDbContext _context;
-
-        public ProducersController(AppDbContext context)
+        public ProducersController(IProducersService service)
         {
-            _context = context;
+            _service = service;
         }
 
         public async Task<IActionResult> Index()
         {
-            var allProducers =await _context.Producers.ToListAsync();
-            return View(allProducers);
+            var producers = await _service.GetAllAsync();
+            return View(producers);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Producer producer)
+        {
+            
+            await _service.AddAsync(producer);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var producer = await _service.GetByIdAsync(id);
+            if (producer == null)
+            {
+                return View("NotFound");
+            }
+            return View(producer);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Producer producer)
+        {
+           
+            await _service.UpdateAsync(id, producer);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var producer = await _service.GetByIdAsync(id);
+            if (producer == null)
+            {
+                return View("NotFound");
+            }
+            return View(producer);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            await _service.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var producer = await _service.GetByIdAsync(id);
+            if (producer == null)
+            {
+                return View("NotFound");
+            }
+            return View(producer);
         }
     }
 }

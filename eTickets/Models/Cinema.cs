@@ -13,6 +13,7 @@ namespace eTickets.Models
         public string Name { get; set; }
 
         [Display(Name = "Cinema Description")]
+        [Required(ErrorMessage = "Description is required")]
         public string Description { get; set; }
         //relationships
         public List<Movie> Movies { get; set; }
